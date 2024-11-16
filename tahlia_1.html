@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate to IP Check</title>
+    <script>
+        // Function to convert HH:MM:SS.fff to milliseconds since the start of the day
+        function timeToMilliseconds(time) {
+            const [hours, minutes, seconds] = time.split(":");
+            const [sec, ms] = seconds.split(".");
+            return (parseInt(hours) * 3600 + parseInt(minutes) * 60 + parseInt(sec)) * 1000 + parseInt(ms);
+        }
+
+        // Fixed time (HH:MM:SS.fff) that we want to navigate to
+        const fixedTime = "15:33:00.000";  // Example fixed time (12:30:00.000)
+
+        // Function to navigate to the IP check URL
+        function navigateToIPCheck() {
+            window.location.href = 'https://checkip.amazonaws.com';
+        }
+
+        // Function to handle the navigation at the fixed time
+        function scheduleNavigation() {
+            const currentTime = new Date();
+            const [hours, minutes, seconds] = fixedTime.split(":");
+            const [sec, ms] = seconds.split(".");
+
+            // Set today's date and the fixed target time
+            currentTime.setHours(parseInt(hours));
+            currentTime.setMinutes(parseInt(minutes));
+            currentTime.setSeconds(parseInt(sec));
+            currentTime.setMilliseconds(parseInt(ms));
+
+            // If the fixed time is already past for today, schedule it for tomorrow
+            if (currentTime.getTime() <= Date.now()) {
+                currentTime.setDate(currentTime.getDate() + 1); // Set to the same time on the next day
+            }
+
+            const delay = currentTime.getTime() - Date.now();
+            document.getElementById("status").innerText = `Scheduled to navigate at ${fixedTime}`;
+
+            setTimeout(navigateToIPCheck, delay);
+        }
+
+        // Handle early navigation by user clicking the button
+        function earlyNavigate() {
+            navigateToIPCheck();
+        }
+
+        // Run scheduleNavigation when the page is loaded
+        window.onload = scheduleNavigation;
+    </script>
+</head>
+<body>
+    <h1>Navigation to IP Check:</h1>
+    <p id="status">Scheduled navigation will occur at the fixed time.</p>
+
+    <button onclick="earlyNavigate()">Go Now</button>
+</body>
+</html>
